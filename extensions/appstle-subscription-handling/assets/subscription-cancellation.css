@@ -1,0 +1,765 @@
+/* Subscription Cancellation Modal Styles */
+
+:root {
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --danger-color: #ff6b6b;
+  --success-color: #4ecdc4;
+  --warning-color: #ffeaa7;
+  --text-color: #2c3e50;
+  --text-muted: #6c757d;
+  --border-color: #e9ecef;
+  --background-light: #f8f9fa;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.15);
+  --border-radius: 12px;
+  --border-radius-lg: 20px;
+  --transition: all 0.3s ease;
+}
+
+/* Base styles */
+.subscription-cancellation-wrapper {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* Subscription List */
+.subscription-list h3 {
+  margin-bottom: 20px;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.subscription-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  margin-bottom: 16px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.subscription-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.subscription-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.subscription-info p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.subscription-status {
+  font-weight: 500;
+}
+
+.status-active {
+  color: var(--success-color);
+}
+
+.status-trialing {
+  color: var(--warning-color);
+}
+
+.status-cancelled {
+  color: var(--danger-color);
+}
+
+.subscription-trial {
+  color: var(--warning-color) !important;
+  font-weight: 500;
+}
+
+/* Cancel Button */
+.cancel-subscription-btn {
+  background: var(--danger-color);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.cancel-subscription-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+/* Loading State */
+.loading-state, .error-state, .no-subscriptions {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Container */
+.modal-container {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.4s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(50px) scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+/* Modal Close Button */
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-muted);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--background-light);
+  color: var(--text-color);
+}
+
+/* Modal Content */
+.modal-content {
+  padding: 50px 40px 40px;
+}
+
+.modal-step {
+  display: none;
+  text-align: center;
+}
+
+.modal-step.active {
+  display: block;
+  animation: stepFadeIn 0.5s ease;
+}
+
+@keyframes stepFadeIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  margin-bottom: 40px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+
+/* Step Icons */
+.step-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  color: white;
+}
+
+.step-icon.sad {
+  background: linear-gradient(135deg, #ff6b6b, #ff8787);
+}
+
+.step-icon.gift {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+}
+
+.step-icon.premium {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.step-icon.success {
+  background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+}
+
+/* Typography */
+.modal-step h2 {
+  color: var(--text-color);
+  margin-bottom: 25px;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.modal-step p {
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Subscription Details Card */
+.subscription-detail-card {
+  background: var(--background-light);
+  padding: 25px;
+  border-radius: var(--border-radius);
+  margin: 25px 0;
+  border-left: 4px solid var(--primary-color);
+  text-align: left;
+}
+
+.subscription-detail-card h4 {
+  color: var(--text-color);
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row span {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.detail-row strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* Offer Cards */
+.offer-card {
+  background: linear-gradient(135deg, var(--warning-color), #fdcb6e);
+  padding: 30px;
+  border-radius: 16px;
+  margin: 30px 0;
+  border: 3px solid #fdcb6e;
+  position: relative;
+  overflow: hidden;
+}
+
+.offer-card::before {
+  content: '🎉';
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 28px;
+}
+
+.offer-card.premium {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  border-color: #f5576c;
+  color: white;
+}
+
+.offer-card.premium::before {
+  content: '👑';
+}
+
+.offer-card h3 {
+  color: #2d3436;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.offer-card.premium h3 {
+  color: white;
+}
+
+.offer-card p {
+  color: #2d3436;
+  margin-bottom: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.offer-card.premium p {
+  color: white;
+}
+
+/* Feedback Input */
+.feedback-textarea {
+  width: 100%;
+  padding: 20px;
+  border: 3px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin: 25px 0;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.feedback-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.feedback-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 16px 32px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 160px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 3px solid var(--border-color);
+  color: var(--text-muted);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-muted);
+  color: var(--text-color);
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger-color), #ff5252);
+  color: white;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+.btn-danger:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+}
+
+/* Loading Container */
+.loading-container {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.loading-container .spinner {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.loading-container p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* Final Result */
+.final-result {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.final-result p {
+  background: var(--background-light);
+  padding: 25px;
+  border-radius: var(--border-radius);
+  margin: 20px 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Error State */
+.error-message {
+  color: var(--danger-color);
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+/* Login Required Styles */
+.login-required-container {
+  margin: 20px 0;
+}
+
+.login-prompt {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 40px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.login-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 25px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+}
+
+.login-prompt h3 {
+  color: var(--text-color);
+  margin-bottom: 15px;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.login-prompt p {
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.login-actions {
+  margin-bottom: 40px;
+}
+
+.login-btn {
+  display: inline-block;
+  text-decoration: none;
+  margin: 0 10px 10px 0;
+}
+
+.login-btn:hover {
+  text-decoration: none;
+}
+
+.login-benefits {
+  background: var(--background-light);
+  padding: 25px;
+  border-radius: var(--border-radius);
+  margin-top: 30px;
+  text-align: left;
+}
+
+.login-benefits h4 {
+  color: var(--text-color);
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.login-benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.login-benefits li {
+  color: var(--text-color);
+  margin-bottom: 10px;
+  padding-left: 10px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.login-benefits li:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile responsive for login prompt */
+@media (max-width: 768px) {
+  .login-prompt {
+    padding: 30px 25px;
+    margin: 0 10px;
+  }
+
+  .login-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .login-btn {
+    margin: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .login-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 35px;
+  }
+
+  .login-prompt h3 {
+    font-size: 1.5rem;
+  }
+
+  .login-prompt p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-prompt {
+    padding: 25px 20px;
+  }
+
+  .login-benefits {
+    padding: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .subscription-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .cancel-subscription-btn {
+    width: 100%;
+  }
+
+  .modal-container {
+    width: 95%;
+    margin: 20px 10px;
+    max-height: 95vh;
+  }
+
+  .modal-content {
+    padding: 40px 25px 30px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn {
+    width: 100%;
+    margin: 0;
+  }
+
+  .step-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 40px;
+    margin-bottom: 25px;
+  }
+
+  .modal-step h2 {
+    font-size: 1.5rem;
+  }
+
+  .modal-step p {
+    font-size: 1rem;
+  }
+
+  .offer-card {
+    padding: 25px 20px;
+  }
+
+  .offer-card h3 {
+    font-size: 1.3rem;
+  }
+
+  .subscription-detail-card {
+    padding: 20px;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 30px 20px 25px;
+  }
+
+  .subscription-item {
+    padding: 20px;
+  }
+
+  .step-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 35px;
+  }
+
+  .modal-step h2 {
+    font-size: 1.3rem;
+  }
+
+  .offer-card {
+    padding: 20px 15px;
+  }
+
+  .feedback-textarea {
+    padding: 15px;
+    min-height: 100px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000;
+    --text-muted: #333;
+  }
+
+  .btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .spinner {
+    animation: none;
+    border: 4px solid var(--primary-color);
+  }
+}

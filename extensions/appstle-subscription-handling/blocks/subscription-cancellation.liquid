@@ -1,0 +1,237 @@
+{% comment %}
+  Subscription Cancellation Block - With Login Button
+{% endcomment %}
+
+<div class="subscription-cancellation-wrapper" data-app-block="subscription-cancellation">
+  {% if customer %}
+    <!-- Logged in customer - show subscription management -->
+    <div id="subscription-cancellation-container">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your subscriptions...</p>
+      </div>
+    </div>
+
+    <!-- Cancellation Modal -->
+    <div id="cancellation-modal" class="modal-overlay">
+      <div class="modal-container">
+        <button class="modal-close" onclick="closeCancellationModal()">&times;</button>
+        
+        <div class="modal-content">
+          <!-- Step 1: Initial Feedback -->
+          <div class="modal-step active" id="step-1">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 25%"></div>
+            </div>
+            
+            <div class="step-icon sad">😔</div>
+            <h2>We're Sorry to See You Go!</h2>
+            
+            <div class="subscription-details" id="subscription-details">
+              <!-- Populated by JavaScript -->
+            </div>
+            
+            <p>Before you cancel, help us understand what went wrong. Your feedback helps us improve!</p>
+            
+            <textarea 
+              id="feedback-input"
+              placeholder="What could we improve? (Optional but helpful)"
+              class="feedback-textarea"
+            ></textarea>
+            
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="proceedToFirstOffer()">
+                Continue
+              </button>
+              <button class="btn btn-secondary" onclick="keepSubscription()">
+                Keep My Subscription
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: First Offer -->
+          <div class="modal-step" id="step-2">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 50%"></div>
+            </div>
+            
+            <div class="step-icon gift">🎁</div>
+            <h2>Wait! Special Offer Just for You</h2>
+            
+            <div class="offer-card">
+              <h3>{{ block.settings.first_offer_days | default: '7' }} Days Completely FREE</h3>
+              <p>We'll extend your subscription at no cost. No strings attached!</p>
+            </div>
+            
+            <p>This gives you more time to explore features you might have missed!</p>
+            
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="acceptFirstOffer()">
+                Accept {{ block.settings.first_offer_days | default: '7' }} Days Free
+              </button>
+              <button class="btn btn-secondary" onclick="proceedToSecondOffer()">
+                No Thanks
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3: Second Offer -->
+          <div class="modal-step" id="step-3">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 75%"></div>
+            </div>
+            
+            <div class="step-icon premium">👑</div>
+            <h2>Our Best Offer Ever!</h2>
+            
+            <div class="offer-card premium">
+              <h3>{{ block.settings.second_offer_days | default: '14' }} Days Completely FREE</h3>
+              <p>This is our absolute best offer - extra time to rediscover our value!</p>
+            </div>
+            
+            <p>We really value you as a customer. This is our final offer!</p>
+            
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="acceptSecondOffer()">
+                Accept {{ block.settings.second_offer_days | default: '14' }} Days Free
+              </button>
+              <button class="btn btn-danger" onclick="proceedWithCancellation()">
+                Cancel Subscription
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 4: Final Result -->
+          <div class="modal-step" id="step-4">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 100%"></div>
+            </div>
+            
+            <div class="step-icon success">✅</div>
+            <h2 id="final-title">Processing...</h2>
+            
+            <div id="loading-state" class="loading-container">
+              <div class="spinner"></div>
+              <p id="loading-message">Please wait...</p>
+            </div>
+            
+            <div id="final-result" class="final-result" style="display: none;">
+              <p id="final-message"></p>
+              <button class="btn btn-primary" onclick="closeCancellationModal()">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Include Styles and JavaScript for logged in users -->
+    {{ 'subscription-cancellation.css' | asset_url | stylesheet_tag }}
+    
+    <script>
+      // Configuration from Liquid
+      window.subscriptionCancellationConfig = {
+        customerId: {{ customer.id | json }},
+        customerEmail: {{ customer.email | json }},
+        firstOfferDays: {{ block.settings.first_offer_days | default: 7 | json }},
+        secondOfferDays: {{ block.settings.second_offer_days | default: 14 | json }},
+        appstleApiKey: {{ block.settings.appstle_api_key | default: 'appstle_sk_e5e5a11aadc243afaaaca10ed5f69dd3' | json }},
+        shopDomain: {{ shop.permanent_domain | json }},
+        primaryColor: {{ block.settings.primary_color | default: '#667eea' | json }},
+        buttonColor: {{ block.settings.button_color | default: '#ff6b6b' | json }}
+      };
+    </script>
+    {{ 'subscription-cancellation.js' | asset_url | script_tag }}
+
+  {% else %}
+    <!-- Not logged in - show login prompt -->
+    <div class="login-required-container">
+      {{ 'subscription-cancellation.css' | asset_url | stylesheet_tag }}
+      
+      <div class="login-prompt">
+        <div class="login-icon">🔐</div>
+        <h3>Login Required</h3>
+        <p>Please log in to your account to manage your subscriptions and access cancellation options.</p>
+        
+        <div class="login-actions">
+          <a href="{{ routes.account_login_url }}" class="btn btn-primary login-btn">
+            Login to Your Account
+          </a>
+          
+          {% unless shop.customer_accounts_enabled == false %}
+            <a href="{{ routes.account_register_url }}" class="btn btn-secondary">
+              Create Account
+            </a>
+          {% endunless %}
+        </div>
+        
+        <div class="login-benefits">
+          <h4>With your account you can:</h4>
+          <ul>
+            <li>✓ View and manage your subscriptions</li>
+            <li>✓ Access exclusive retention offers</li>
+            <li>✓ Pause or modify your subscription</li>
+            <li>✓ Track order history and billing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Subscription Cancellation",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "appstle_api_key",
+      "label": "Appstle API Key",
+      "default": "appstle_sk_e5e5a11aadc243afaaaca10ed5f69dd3",
+      "info": "Your Appstle API key from Settings > Shop Settings"
+    },
+    {
+      "type": "text",
+      "id": "first_offer_days",
+      "label": "First Offer Days",
+      "default": "7",
+      "info": "Number of free days for first retention offer"
+    },
+    {
+      "type": "text",
+      "id": "second_offer_days",
+      "label": "Second Offer Days",
+      "default": "14",
+      "info": "Number of free days for second retention offer"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Primary Color",
+      "default": "#667eea"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Cancel Button Color",
+      "default": "#ff6b6b"
+    },
+    {
+      "type": "text",
+      "id": "login_title",
+      "label": "Login Prompt Title",
+      "default": "Login Required",
+      "info": "Title shown to non-logged in users"
+    },
+    {
+      "type": "textarea",
+      "id": "login_message",
+      "label": "Login Prompt Message",
+      "default": "Please log in to your account to manage your subscriptions and access cancellation options.",
+      "info": "Message shown to non-logged in users"
+    }
+  ]
+}
+{% endschema %}

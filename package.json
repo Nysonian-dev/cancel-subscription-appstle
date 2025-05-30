@@ -1,22 +1,31 @@
 {
-  "name": "cancel-subscription-appstle",
+  "name": "subscription-cancellation-app",
   "version": "1.0.0",
-  "license": "UNLICENSED",
+  "description": "Shopify app for subscription cancellation with retention offers",
+  "main": "web/index.js",
   "scripts": {
-    "shopify": "shopify",
     "build": "shopify app build",
     "dev": "shopify app dev",
     "info": "shopify app info",
     "generate": "shopify app generate",
-    "deploy": "shopify app deploy"
+    "deploy": "shopify app deploy",
+    "lint": "eslint web/ extensions/",
+    "test": "jest"
   },
   "dependencies": {},
-  "trustedDependencies": [
-    "@shopify/plugin-cloudflare"
-  ],
-  "author": "DELL",
-  "private": true,
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0"
+  },
   "workspaces": [
+    "web",
+    "web/frontend",
     "extensions/*"
-  ]
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/subscription-cancellation-app.git"
+  }
 }
